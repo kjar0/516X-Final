@@ -21,6 +21,12 @@ Syntax highlighted code block
 1. Numbered
 2. List
 
+**Bold** and _Italic_ and `Code` text
+
+[Link](url) and ![Image](src)
+```
+
+For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 Overall, I will be looking for the following:
 
 * Introduction to a research question (what is the background on this subject; why does the question matter; who will it help; how has been attempted to be answered)
@@ -46,13 +52,6 @@ Other things I will look for:
 * Inclusion of statistical tools
 
 * Publication of workflow in a version controlled manner (your code should be on github)
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 
 ### Jekyll Themes
 
