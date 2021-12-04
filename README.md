@@ -21,6 +21,32 @@ Syntax highlighted code block
 1. Numbered
 2. List
 
+Overall, I will be looking for the following:
+
+* Introduction to a research question (what is the background on this subject; why does the question matter; who will it help; how has been attempted to be answered)
+
+* Clear data analysis question 
+
+* Clear identification of data inputs
+
+* Clear identification of analysis methods, including a well documented workflow figure.  
+
+Additionally, I would like to see a written discussion of the following:
+
+* Incorporation of at least three topics relevant to this class  - what from the class did you use in this project and why might it be useful for research projects like this?  What are the advantages and disadvantages?  Were there any assumptions or transformations needed?  Some topics discussed:  data wrangling; exploratory data analysis / summarizing data; identification of patterns and relationships; making predictions and decisions; text scraping; automation; scaling; randomization and bootstrapping; statistical analysis; ability to read and incorporate packages; supervised and unsupervised learning; cloud computing; using standard inputs; version control; how to manipulate multiple files with standard workflows; reproducible workflows, etc.
+
+* How much does your analysis attain the FAIR principles? 
+
+For example, what is the ability to automate and reproduce your analysis (if the file input were to change, could this analysis be reproduced and how easily?)  - how will someone else reproduce this analysis?  Is the data stored somewhere?  Can I reproduce the figures easily?
+
+* Creation of one assignment based on your dataset for the class to complete - one can think of this of a task or homework assignment based on your project.
+
+Other things I will look for:
+
+* Inclusion of statistical tools
+
+* Publication of workflow in a version controlled manner (your code should be on github)
+
 **Bold** and _Italic_ and `Code` text
 
 [Link](url) and ![Image](src)
