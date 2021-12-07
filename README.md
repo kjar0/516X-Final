@@ -68,7 +68,7 @@ csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-![Project Workflow](flow.jpg)
+![Project Workflow](flow.png)
 
 ## Discussion
 
