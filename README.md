@@ -1,11 +1,5 @@
 # ABE Competencies and Workforce Skills
 
-python notebook link test
-[test1](ABE_comp_job.ipynb)
-[test2](https://github.com/kjar0/516X-Final/blob/229f8b3c1e824566012866598d0a73502316967e/ABE_comp_job.ipynb)
-
-
-
 ## Research Background and Question
 
 The ABE department is fantastic at Iowa State University! The undergraduate program is ranked #2 in the nation while the graduate program is #1. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need during their time at Iowa State so they can be successful in the workplace. These key skills are called competencies, and are:
@@ -30,7 +24,7 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebook](https://github.com/kjar0/516X-Final/blob/d1781e27e4dd0ea36f73f3d0bbae37be51eed352/ABE_comp_job.ipynb) A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![Jupyter Notebook](https://github.com/kjar0/516X-Final/blob/229f8b3c1e824566012866598d0a73502316967e/ABE_comp_job.ipynb). A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
@@ -128,6 +122,7 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
 ![Python Notebook](ABE_comp_job.ipynb)
+# make an assignment notebook here!!
 
 ## Conclusions and Final Thoughts
 
