@@ -24,7 +24,7 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located ![in this notebook](ABE_comp_job.ipynb) A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebook](ABE_comp_job.ipynb) A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
@@ -68,7 +68,7 @@ csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-![Project Workflow](project workflow kaj.pdf)
+![Project Workflow](flow.jpg)
 
 ## Discussion
 
