@@ -1,8 +1,5 @@
 # ABE Competencies and Workforce Skills
 
-
-### Kate Jaros' Final Project for ABE 516X
-
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
@@ -47,11 +44,9 @@ When reading over this list, the language almost sounds like a job description! 
 
 ABE student outcomes and required skills from job descriptions both characterize how a person is able to think and work. This project serves as an evaluation of these competencies. The main research question is: do ABE course competencies support students to meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department up to date with what employers are looking for.Evaluating the curriculum ensures that students are prepared to be successful and get their money's worth with a degree from ISU!
 
-* Clear data analysis question 
-
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located here ** link file ** A project workflow is included at the conclusion of this section. 
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located here ** link file ** A project workflow is included at the conclusion of this section. The data analysis question was: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
@@ -73,52 +68,86 @@ Even with a base code, accomplishing the text scraping from indeed was difficult
 
 Once I gathered the data, I needed to take the raw information and format it in a way that would be functional. The only changes I have made at this point are remove the \n (newline) characters from the job description text. I wrote a function that would take a string input and remove capitalization, punctuation, and common words that add little content value (the, a, if). After running the code a few times, I also created an addendum to the english common words that are removed from analysis. When running the analysis, the function will select key words that do appear frequently in the job postings, but don't provide a lot of context about job skills. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
 
-
 #### Data Manipulation & Analysis
 
-Once I established the text scraping and formatting functions, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from `major_comp` was a list of the keywords so they could be used for further analysis. 
+Once I established the text scraping and formatting functions, I leveraged a 3rd function,`major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the [TF-IDF Vectorizer] (https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html). This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from`major_comp` was a list of the keywords so they could be used for further analysis. 
 
 Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. 
+```
+# initialize vector and find TF-IDF matrix for each document
+tfidf_v = TfidfVectorizer()
+# train with vocabulary used in job postings
+jfit = tfidf_v.fit(job_skill_4vec)
+# transform job posting + competency key skills to TF-IDF matrix
+tf_matrix = tfidf_v.transform(jobncomp_4vec)
+```
+I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This is the measure of the similarity between two non-zero vectors in space. 
+```
+# find cosine similarity for competency vs. posting by job type
+csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
+```
+Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
+****** put in workflow figure hereeee hahahahahahahahlove! *********
+## Task Suggestions
+1. Update the text scraping function `indeed_posts` to take an additional input of keywords to narrow the search. This is currently set as the kword variable within the function, but make the necessary changes to allow the user to decide how to filter the search besides job title. Snippet of function relating to search url building shown below.
 
-* Clear identification of data inputs
-
-* Clear identification of analysis methods, including a well documented workflow figure.  
+```
+def indeed_posts(search_term):
+   #####
+   code removed, see file
+   #####
+    sind = f'https://www.indeed.com/jobs?as_and='
+    kword = '&as_phr&as_any=biological%2C%20agriculture%2C%20food%2C%20environment%2C%20biofuel%2C%20fermentation%2C%20water%2C%20machinery%2C%20animal'
+    end = '&as_not&as_ttl&as_cmp&jt=all&st&salary&radius=25&l&fromage=any&limit=10&sort=date&psf=advsrch&from=advancedsearch'
+    for pagenum in range(0,10,10):
+        for word in range(0,len(kw)-1):
+            search_url = sind + kw[word] + '%20'
+        search_url = search_url + kw[len(kw)-1] + kword + end+'%20&start=' + str(pagenum)
+        r = requests.get(search_url, headers = headers)
+   #####
+   code removed, see file
+   #####
+```
+*** insert file here ****
 
 ## Discussion
+
+* talk about data / results
+
+** insert top keywords *** 
 
 Additionally, I would like to see a written discussion of the following:
 
 * Incorporation of at least three topics relevant to this class  - what from the class did you use in this project and why might it be useful for research projects like this?  What are the advantages and disadvantages?  Were there any assumptions or transformations needed?  Some topics discussed:  data wrangling; exploratory data analysis / summarizing data; identification of patterns and relationships; making predictions and decisions; text scraping; automation; scaling; randomization and bootstrapping; statistical analysis; ability to read and incorporate packages; supervised and unsupervised learning; cloud computing; using standard inputs; version control; how to manipulate multiple files with standard workflows; reproducible workflows, etc.
 
-Relevant Class Topics:
-- Data Wrangling
-- Text Scraping
+### Relevant Class Topics
 - Ability to read in and incorporate packages
+- Text scraping
+- Data wrangling
+- Exploratory data analysis
+
+To complete this project, I needed to complete a lot of independent investigation into text analysis. I definitely went down a few rabbit holes... there's so many cool models to use that are definitely way above my level of understanding, so I'm sure that this analysis could be improved significantly. However, I did have to install a few packages and utilize them in this code (ex. NLTK). Text scraping was also a big component of this project. I got to experience the fun of combing through messy html looking for one small snippet! Also, I really enjoyed troubleshooting the CAPTCHA issues and figuring out how to go around text scraping filters. To no surprise, a significant amount of time on this project was spent messing around with data so I could actually use it! I realized how much I rely on DataFrames because I'm more familiar with the formatting and different actions you can take, but for future practice I'm going to work on manipulating different data types, particularly arrays and dictionaries. 
 
 * How much does your analysis attain the FAIR principles? 
-
-
 For example, what is the ability to automate and reproduce your analysis (if the file input were to change, could this analysis be reproduced and how easily?)  - how will someone else reproduce this analysis?  Is the data stored somewhere?  Can I reproduce the figures easily?
 
-* Creation of one assignment based on your dataset for the class to complete - one can think of this of a task or homework assignment based on your project.
 
-Other things I will look for:
 
-* Inclusion of statistical tools
+### FAIR principles 
 
-* Publication of workflow in a version controlled manner (your code should be on github)
+Findable: This code and relevant data is published on github
+
+Accessible: This code and relevant data is published on github
+
+Interoperable: This code is decently interoperable. I have the key steps broken up into functions so a particular function could be extracted and used in another workflow. While the processing of the raw data is tailored to the file, any information to be used simply needs to be put into a list. Further, the text scraping function can be utilized for any job search. 
+
+Reusable: The keywords identified from this analysis could be referenced with course objectives specific to each major's option to determine which specific options need strength. 
+The FAIR principles for scientific data are: findable, accessible, interoperable, and reusable. The data and analysis for this project is findable and accessible through github, where the allowable information is publicly available for others to observe and interact with. Due to how the data was organized and the continuous learning required to create usable information, I don’t think my project meets the interoperable principle. The process is reusable, and the data is available for other analyses. For reproducibility, the assumptions about the raw data may vary from person to person, although I believe my assumptions to be more representative given my familiarity with the material. Other types of data can follow a similar process, but of course my code is tailored exclusively to the data. It would have been great to create some functions within the code to perform some of the longer, repeatable steps. This would have streamlined the information and potentially made is more useful.
+
 
 ## Conclusions and Final Thoughts
 
 The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
 
 Surprisingly, even when using the advanced search it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between 
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/kjar0/516X-Final/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
