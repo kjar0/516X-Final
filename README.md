@@ -48,7 +48,7 @@ Once I gathered the data, I needed to take the raw information and format it in 
 
 #### Data Manipulation & Analysis
 
-Once I established the text scraping and formatting functions, I leveraged a 3rd function,`major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the [TF-IDF Vectorizer] (https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html). This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from`major_comp` was a list of the keywords so they could be used for further analysis. 
+Once I established the text scraping and formatting functions, I leveraged a 3rd function,`major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from`major_comp` was a list of the keywords so they could be used for further analysis. 
 
 Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. 
 ```
@@ -64,13 +64,17 @@ I used the cosine_similarity function to compute the dot product of the job post
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 ```
+![Heat Map](csim_heat.jpg)
+
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-****** put in workflow figure hereeee hahahahahahahahlove! *********
+![Work](project workflow kaj.pdf)
 
 ## Discussion
 
-A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a ___ role and least prepared for ___
+A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing. 
+
+![Skill](key_skills.jpg)
 
 However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequaately prepared with skills for the workforce.   
 
@@ -121,7 +125,7 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 
 2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-*** insert link  to full file here ****
+![Notebook](ABE_comp_job.ipynb)
 
 ## Conclusions and Final Thoughts
 
