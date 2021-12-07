@@ -1,30 +1,8 @@
 # ABE Competencies and Workforce Skills
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-
-
 ## Research Background and Question
 
-The ABE department is fantastic at Iowa State University! The undergraduate program is ranked '#2 in the nation while the graduate program is '#1. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need during their time at Iowa State so they can be successful in the workplace. These key skills are called competencies, and are:
+The ABE department is fantastic at Iowa State University! The undergraduate program is ranked #2 in the nation while the graduate program is #1. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need during their time at Iowa State so they can be successful in the workplace. These key skills are called competencies, and are:
 
 > 1. an ability to identify, formulate, and solve complex engineering problems by applying principles of engineering, science, and mathematics
 > 2. an ability to apply engineering design to produce solutions that meet specified needs with consideration of public health, safety, and welfare, as well as global, cultural, social, environmental, and economic factors
@@ -34,7 +12,7 @@ The ABE department is fantastic at Iowa State University! The undergraduate prog
 > 6. an ability to develop and conduct appropriate experimentation, analyze and interpret data, and use engineering judgment to draw conclusions
 > 7. an ability to acquire and apply new knowledge as needed, using appropriate learning strategies.
 
-When reading over this list, the language almost sounds like a job description! For example, here's a job description from John Deere (the company that hires the most ABE graduates) for a Design Engineer (the most common job title for ABE graduates)
+When reading over this list, the language almost sounds like a job description! For example, here's a job description from John Deere (the company that hires the most ABE graduates) for a Design Engineer (the most common job title for ABE graduates):
 
 > - Analyze assignments and determine engineering specifications for complex problems or projects of moderate scope
 > - Produce and/or evaluate possible design solutions to improve cost, quality and performance based on specialized knowledge of engineering applications
@@ -46,17 +24,17 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located here ** link file ** A project workflow is included at the conclusion of this section. The data analysis question was: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located here ** link file ** A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
 To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. The top 5 job titles upon graduation that at least 3 people reported were:
 
-> Design Engineer
-> Project Engineer
-> Production Engineer
-> Agricultural Engineer
-> Manufacturing Engineer
+> - Design Engineer
+> - Project Engineer
+> - Production Engineer
+> - Agricultural Engineer
+> - Manufacturing Engineer
 
 These 5 job titles are good search terms to utilize because they represent all majors -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. 
 
@@ -89,6 +67,36 @@ csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
 ****** put in workflow figure hereeee hahahahahahahahlove! *********
+
+## Discussion
+
+A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a ___ role and least prepared for ___
+
+However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequaately prepared with skills for the workforce.   
+
+Additionally, I would like to see a written discussion of the following:
+
+* Incorporation of at least three topics relevant to this class  - what from the class did you use in this project and why might it be useful for research projects like this?  What are the advantages and disadvantages?  Were there any assumptions or transformations needed?  Some topics discussed:  data wrangling; exploratory data analysis / summarizing data; identification of patterns and relationships; making predictions and decisions; text scraping; automation; scaling; randomization and bootstrapping; statistical analysis; ability to read and incorporate packages; supervised and unsupervised learning; cloud computing; using standard inputs; version control; how to manipulate multiple files with standard workflows; reproducible workflows, etc.
+
+### Relevant Class Topics
+
+- Ability to read in and incorporate packages
+- Text scraping
+- Data wrangling
+- Exploratory data analysis
+
+To complete this project, I needed to complete a lot of independent investigation into text analysis. I definitely went down a few rabbit holes... there's so many cool models to use that are definitely way above my level of understanding, so I'm sure that this analysis could be improved significantly. However, I did have to install a few packages and utilize them in this code (ex. NLTK). Text scraping was also a big component of this project. I got to experience the fun of combing through messy html looking for one small snippet! Also, I really enjoyed troubleshooting the CAPTCHA issues and figuring out how to go around text scraping filters. To no surprise, a significant amount of time on this project was spent messing around with data so I could actually use it! I realized how much I rely on DataFrames because I'm more familiar with the formatting and different actions you can take, but for future practice I'm going to work on manipulating different data types, particularly arrays and dictionaries. 
+
+### FAIR principles 
+
+Findable: This code and relevant data is published on github
+
+Accessible: This code and relevant data is published on github
+
+Interoperable: This code is decently interoperable. I have the key steps broken up into functions so a particular function could be extracted and used in another workflow. While the processing of the raw data is tailored to the file, any information to be used simply needs to be put into a list. Further, the text scraping function can be utilized for any job search. 
+
+Reusable: The keywords identified from this analysis could be referenced with course objectives specific to each major's option to determine which specific options need strength. The figures produced from the heat mat aren't necessarily reproducable with the current state of the code because Indeed.com is constantly updating with new jobs. This could be changed with further editing by having a fixed set of job postings utilized. However, choice this keeps the results up to date with the job market. Also, the analysis just requires a list of strings. This section of the code could be used to compare any pieces of text!
+
 ## Task Suggestions
 1. Update the text scraping function `indeed_posts` to take an additional input of keywords to narrow the search. This is currently set as the kword variable within the function, but make the necessary changes to allow the user to decide how to filter the search besides job title. Snippet of function relating to search url building shown below.
 
@@ -109,45 +117,14 @@ def indeed_posts(search_term):
    code removed, see file
    #####
 ```
-*** insert file here ****
+Note: for full functionality in the context of this analysis, the major_comp function would need to be updated also. For the purpose of this task, just copy the indeed_posts function independently and get that working!
 
-## Discussion
+2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-* talk about data / results
-
-** insert top keywords *** 
-
-Additionally, I would like to see a written discussion of the following:
-
-* Incorporation of at least three topics relevant to this class  - what from the class did you use in this project and why might it be useful for research projects like this?  What are the advantages and disadvantages?  Were there any assumptions or transformations needed?  Some topics discussed:  data wrangling; exploratory data analysis / summarizing data; identification of patterns and relationships; making predictions and decisions; text scraping; automation; scaling; randomization and bootstrapping; statistical analysis; ability to read and incorporate packages; supervised and unsupervised learning; cloud computing; using standard inputs; version control; how to manipulate multiple files with standard workflows; reproducible workflows, etc.
-
-### Relevant Class Topics
-- Ability to read in and incorporate packages
-- Text scraping
-- Data wrangling
-- Exploratory data analysis
-
-To complete this project, I needed to complete a lot of independent investigation into text analysis. I definitely went down a few rabbit holes... there's so many cool models to use that are definitely way above my level of understanding, so I'm sure that this analysis could be improved significantly. However, I did have to install a few packages and utilize them in this code (ex. NLTK). Text scraping was also a big component of this project. I got to experience the fun of combing through messy html looking for one small snippet! Also, I really enjoyed troubleshooting the CAPTCHA issues and figuring out how to go around text scraping filters. To no surprise, a significant amount of time on this project was spent messing around with data so I could actually use it! I realized how much I rely on DataFrames because I'm more familiar with the formatting and different actions you can take, but for future practice I'm going to work on manipulating different data types, particularly arrays and dictionaries. 
-
-* How much does your analysis attain the FAIR principles? 
-For example, what is the ability to automate and reproduce your analysis (if the file input were to change, could this analysis be reproduced and how easily?)  - how will someone else reproduce this analysis?  Is the data stored somewhere?  Can I reproduce the figures easily?
-
-
-
-### FAIR principles 
-
-Findable: This code and relevant data is published on github
-
-Accessible: This code and relevant data is published on github
-
-Interoperable: This code is decently interoperable. I have the key steps broken up into functions so a particular function could be extracted and used in another workflow. While the processing of the raw data is tailored to the file, any information to be used simply needs to be put into a list. Further, the text scraping function can be utilized for any job search. 
-
-Reusable: The keywords identified from this analysis could be referenced with course objectives specific to each major's option to determine which specific options need strength. 
-The FAIR principles for scientific data are: findable, accessible, interoperable, and reusable. The data and analysis for this project is findable and accessible through github, where the allowable information is publicly available for others to observe and interact with. Due to how the data was organized and the continuous learning required to create usable information, I don’t think my project meets the interoperable principle. The process is reusable, and the data is available for other analyses. For reproducibility, the assumptions about the raw data may vary from person to person, although I believe my assumptions to be more representative given my familiarity with the material. Other types of data can follow a similar process, but of course my code is tailored exclusively to the data. It would have been great to create some functions within the code to perform some of the longer, repeatable steps. This would have streamlined the information and potentially made is more useful.
-
+*** insert link  to full file here ****
 
 ## Conclusions and Final Thoughts
 
 The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
 
-Surprisingly, even when using the advanced search it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between 
+Surprisingly, even when using the advanced search it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between the job posting text and competencies. Further, the job postings contain a decent amount of information relating to the company and various disclaimer statements about the job. Another area of improvement would be to have an even more exhaustive text preprocessing to remove that sort of information. Also, it would be helpful to utilize a method that identifies similar words (plurals, synonyms) while maintaining nuance. There are truly so many specialized options out there that there is significant room for improvement on this project. 
