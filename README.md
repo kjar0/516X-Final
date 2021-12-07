@@ -24,18 +24,28 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebookpath](ABE_comp_job.ipynb) [notebooklink](https://github.com/kjar0/516X-Final/blob/7118e9ef78183f967e09b61e2a1cdbfb9f90c43a/ABE_comp_job.ipynb), please take a look if you're interested. A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebookpath](ABE_comp_job.ipynb) [notebooklink](https://github.com/kjar0/516X-Final/blob/7118e9ef78183f967e09b61e2a1cdbfb9f90c43a/ABE_comp_job.ipynb), please take a look if you're interested! The project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
-To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. The top 5 job titles upon graduation that at least 3 people reported were:
+To answer this research question, I received ABE competencies (shown in Research Background) as well as graduating student survey answers from 2016-2021 for the department. The first thing I did with the data was identify any missing values. I was shocked to see how many fields were left blank on the survey, over 50% for Job Title and even more for Organization name and City. 
+```
+abe_survey = pd.read_excel('ABE Career Outcomes Data 2016-2021.xlsx')
+print(abe_survey.isna().sum())
+Degree Date                0
+Degree Level               0
+Major 1 at Graduation      0
+Organization Name        196
+Job Title                190
+City                     193
+State                    172
+dtype: int64
 
-> - Design Engineer
-> - Project Engineer
-> - Production Engineer
-> - Agricultural Engineer
-> - Manufacturing Engineer
-
+blank = abe_survey.isna().sum()
+print(blank['Job Title']/len(abe_survey))
+0.5026455026455027
+```
+From the survey answers available, I retrieved the common job titles that ABE students have as well as the most popular employers. 
 
 ```
 bse = abe_survey[abe_survey['Major 1 at Graduation'] == 'Biological Systems Engineering']
@@ -70,9 +80,17 @@ Sage Ag LLC                                     3
 CNH Industrial                                  3
 USDA Natural Resources Conservation Service     3
 Name: Organization Name, dtype: int64
-
-
 ```
+
+The top 5 job titles upon graduation that at least 3 people reported were:
+
+> - Design Engineer
+> - Project Engineer
+> - Production Engineer
+> - Agricultural Engineer
+> - Manufacturing Engineer
+
+
 These 5 job titles are good search terms to utilize because they represent all majors -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. 
 
 For Indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a DataFrame containing job title, company, and URL for job posting. Then, for each saved URL from the first search, you navigate to that page and grab the job description text. This is added as another column on the DataFrame that is returned to the user. 
