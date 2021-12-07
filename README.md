@@ -64,17 +64,17 @@ I used the cosine_similarity function to compute the dot product of the job post
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 ```
-![Heat Map](csim_heat.jpg)
+![Heat Map](/images/csim_heat.jpg)
 
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-![Project Workflow](flow.png)
+![Project Workflow](/images/flow.png)
 
 ## Discussion
 
 A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing engineering. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to manufacturing engineering is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. 
 
-![Skill](top_skills.jpg)
+![Skill](/images/top_skills.jpg)
 
 However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequately prepared with skills for the workforce.   
 
