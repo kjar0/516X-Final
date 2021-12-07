@@ -59,7 +59,7 @@ jfit = tfidf_v.fit(job_skill_4vec)
 # transform job posting + competency key skills to TF-IDF matrix
 tf_matrix = tfidf_v.transform(jobncomp_4vec)
 ```
-I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This is the measure of the similarity between two non-zero vectors in space. 
+I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This is the measure of the similarity between two non-zero vectors in space.
 ```
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
@@ -72,15 +72,11 @@ Finally, I added the top keywords for the common jobs and course competencies to
 
 ## Discussion
 
-A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing. 
+A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing engineering. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to manufacturing engineering is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. 
 
-![Skill](key_skills.jpg)
+![Skill](top_skills.jpg)
 
-However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequaately prepared with skills for the workforce.   
-
-Additionally, I would like to see a written discussion of the following:
-
-* Incorporation of at least three topics relevant to this class  - what from the class did you use in this project and why might it be useful for research projects like this?  What are the advantages and disadvantages?  Were there any assumptions or transformations needed?  Some topics discussed:  data wrangling; exploratory data analysis / summarizing data; identification of patterns and relationships; making predictions and decisions; text scraping; automation; scaling; randomization and bootstrapping; statistical analysis; ability to read and incorporate packages; supervised and unsupervised learning; cloud computing; using standard inputs; version control; how to manipulate multiple files with standard workflows; reproducible workflows, etc.
+However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequately prepared with skills for the workforce.   
 
 ### Relevant Class Topics
 
