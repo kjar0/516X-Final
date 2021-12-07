@@ -1,10 +1,7 @@
 # ABE Competencies and Workforce Skills
 
-You can use the [editor on GitHub](https://github.com/kjar0/516X-Final/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
+### Kate Jaros' Final Project for ABE 516X
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
@@ -26,25 +23,42 @@ Syntax highlighted code block
 [Link](url) and ![Image](src)
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 Overall, I will be looking for the following:
 
 * Introduction to a research question (what is the background on this subject; why does the question matter; who will it help; how has been attempted to be answered)
 
-## Research Question
+## Research Background and Question
 
-The ABE department is fantastic at Iowa State University. The undergraduate program is ranked X in the nation while the graduate program is X. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need to be successful in the workplace. These key skills are called competencies, and are:
+The ABE department is fantastic at Iowa State University! The undergraduate program is ranked '#2 in the nation while the graduate program is '#1. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need during their time at Iowa State so they can be successful in the workplace. These key skills are called competencies, and are:
 
-This project serves as an evaluation of ABE and AST/ITEC competencies. The main research question is: do ABE course competencies meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department on the front of what employers are looking for.
+> 1. an ability to identify, formulate, and solve complex engineering problems by applying principles of engineering, science, and mathematics
+> 2. an ability to apply engineering design to produce solutions that meet specified needs with consideration of public health, safety, and welfare, as well as global, cultural, social, environmental, and economic factors
+> 3. an ability to communicate effectively with a range of audiences
+> 4. an ability to recognize ethical and professional responsibilities in engineering situations and make informed judgments, which must consider the impact of engineering solutions in global, economic, environmental, and societal contexts
+> 5. an ability to function effectively on a team whose members together provide leadership, create a collaborative and inclusive environment, establish goals, plan tasks, and meet objectives
+> 6. an ability to develop and conduct appropriate experimentation, analyze and interpret data, and use engineering judgment to draw conclusions
+> 7. an ability to acquire and apply new knowledge as needed, using appropriate learning strategies.
+
+When reading over this list, the language almost sounds like a job description! For example, here's a job description from John Deere (the company that hires the most ABE graduates) for a Design Engineer (the most common job title for ABE graduates)
+
+### !Double check what the most common job title is and add that here teehee!
+
+ABE student outcomes and required skills from job descriptions both characterize how a person is able to think and work. This project serves as an evaluation of these competencies. The main research question is: do ABE course competencies support students to meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department up to date with what employers are looking for.Evaluating the curriculum ensures that students are prepared to be successful and get their money's worth with a degree from ISU!
 
 * Clear data analysis question 
 
 ## Data Analysis
 
-To answer this question, I needed to perform data analysis. From the department, I received ABE competencies as well as graduating student survey answers from 2016-present. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. 
+To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. 
 
-I used the common job titles as the search terms that would be input to indeed.com. For indeed text scraping, I used a great code developed by Ryan Jeon as a starting point. The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a dataframe containing job title, company, URL for job posting, and job description.
+I used the common job titles as the search terms that would be input to indeed.com. For indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a dataframe containing job title, company, URL for job posting, and job description.
 
+```
+
+competencies = pd.read_excel('competencies.xlsx')
+abe_comp = competencies[competencies['Major']=='Engineering'].drop(['Option(s)', 'Major'], axis=1)
+
+```
 
 
 * Clear identification of data inputs
