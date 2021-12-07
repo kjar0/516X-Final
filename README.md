@@ -68,11 +68,13 @@ csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-****** put in workflow figure hereeee hahahahahahahahlove! *********
+![Work](project workflow kaj.pdf)
 
 ## Discussion
 
 A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a ___ role and least prepared for ___
+
+![Skill](key_skills.jpg)
 
 However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequaately prepared with skills for the workforce.   
 
@@ -123,7 +125,7 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 
 2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-*** insert link  to full file here ****
+![Notebook](ABE_comp_job.ipynb)
 
 ## Conclusions and Final Thoughts
 
