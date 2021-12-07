@@ -72,7 +72,7 @@ Finally, I added the top keywords for the common jobs and course competencies to
 
 ## Discussion
 
-A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a ___ role and least prepared for ___
+A lower cosine_similarity result indicates a closer match between two references. Based on this analysis, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing. 
 
 ![Skill](key_skills.jpg)
 
