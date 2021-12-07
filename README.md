@@ -64,6 +64,7 @@ I used the cosine_similarity function to compute the dot product of the job post
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 ```
+![Heat Map](csim_heat.jpg)
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
 ****** put in workflow figure hereeee hahahahahahahahlove! *********
