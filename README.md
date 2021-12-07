@@ -1,5 +1,11 @@
 # ABE Competencies and Workforce Skills
 
+python notebook link test
+[test1](ABE_comp_job.ipynb)
+[test2](https://github.com/kjar0/516X-Final/blob/229f8b3c1e824566012866598d0a73502316967e/ABE_comp_job.ipynb)
+
+
+
 ## Research Background and Question
 
 The ABE department is fantastic at Iowa State University! The undergraduate program is ranked #2 in the nation while the graduate program is #1. This recognition is well deserved and is due to the excellent faculty and commitment to students. As part of this commitment, the department works hard to ensure that students are fine-tuning the skills they need during their time at Iowa State so they can be successful in the workplace. These key skills are called competencies, and are:
