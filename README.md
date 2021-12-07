@@ -23,9 +23,7 @@ Syntax highlighted code block
 [Link](url) and ![Image](src)
 ```
 
-Overall, I will be looking for the following:
 
-* Introduction to a research question (what is the background on this subject; why does the question matter; who will it help; how has been attempted to be answered)
 
 ## Research Background and Question
 
@@ -41,13 +39,21 @@ The ABE department is fantastic at Iowa State University! The undergraduate prog
 
 When reading over this list, the language almost sounds like a job description! For example, here's a job description from John Deere (the company that hires the most ABE graduates) for a Design Engineer (the most common job title for ABE graduates)
 
-### !Double check what the most common job title is and add that here teehee!
+> - Analyze assignments and determine engineering specifications for complex problems or projects of moderate scope
+> - Produce and/or evaluate possible design solutions to improve cost, quality and performance based on specialized knowledge of engineering applications
+> - Collaborate with other functional engineering groups, supply management and/or supplier personnel
+> - Compile and furnish necessary information (engineering decisions and reports of pertinent design analyses data) to document the design solution required for building of prototypes and adoption of the design
+> - Provide technical support to marketing, manufacturing, quality and supply management organizations
 
 ABE student outcomes and required skills from job descriptions both characterize how a person is able to think and work. This project serves as an evaluation of these competencies. The main research question is: do ABE course competencies support students to meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department up to date with what employers are looking for.Evaluating the curriculum ensures that students are prepared to be successful and get their money's worth with a degree from ISU!
 
 * Clear data analysis question 
 
 ## Data Analysis
+
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located here ** link file ** A project workflow is included at the conclusion of this section. 
+
+#### Collect Information
 
 To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. The top 5 job titles upon graduation that at least 3 people reported were:
 
@@ -57,14 +63,22 @@ To answer this research question, I received ABE competencies as well as graduat
 > Agricultural Engineer
 > Manufacturing Engineer
 
-These 5 job titles are good search terms to utilize because they represent all majors--each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. For indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a dataframe containing job title, company, URL for job posting, and job description.
+These 5 job titles are good search terms to utilize because they represent all majors -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. 
 
-```
+For Indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a DataFrame containing job title, company, and URL for job posting. Then, for each saved URL from the first search, you navigate to that page and grab the job description text. This is added as another column on the DataFrame that is returned to the user. 
 
-competencies = pd.read_excel('competencies.xlsx')
-abe_comp = competencies[competencies['Major']=='Engineering'].drop(['Option(s)', 'Major'], axis=1)
+Even with a base code, accomplishing the text scraping from indeed was difficult due to the sheer volume. Once I started incorporating more jobs and search terms, I would get flagged as a bot. The links put together would require a CAPTCHA solve before going to the content. To address this, I utilized a number of User Agents where one was randomly selected for use with each query. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
 
-```
+#### Pre-process data
+
+Once I gathered the data, I needed to take the raw information and format it in a way that would be functional. The only changes I have made at this point are remove the \n (newline) characters from the job description text. I wrote a function that would take a string input and remove capitalization, punctuation, and common words that add little content value (the, a, if). After running the code a few times, I also created an addendum to the english common words that are removed from analysis. When running the analysis, the function will select key words that do appear frequently in the job postings, but don't provide a lot of context about job skills. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
+
+
+#### Data Manipulation & Analysis
+
+Once I established the text scraping and formatting functions, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from `major_comp` was a list of the keywords so they could be used for further analysis. 
+
+Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. 
 
 
 * Clear identification of data inputs
@@ -97,7 +111,9 @@ Other things I will look for:
 
 ## Conclusions and Final Thoughts
 
-The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey
+The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
+
+Surprisingly, even when using the advanced search it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between 
 
 ### Jekyll Themes
 
