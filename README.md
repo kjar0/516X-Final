@@ -49,9 +49,15 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. 
+To answer this research question, I received ABE competencies as well as graduating student survey answers from 2016-2021 from the department. From the survey answers, I retrieved the common job titles that ABE students have as well as the most popular employers. The top 5 job titles upon graduation that at least 3 people reported were:
 
-I used the common job titles as the search terms that would be input to indeed.com. For indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a dataframe containing job title, company, URL for job posting, and job description.
+> Design Engineer
+> Project Engineer
+> Production Engineer
+> Agricultural Engineer
+> Manufacturing Engineer
+
+These 5 job titles are good search terms to utilize because they represent all majors--each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. For indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a dataframe containing job title, company, URL for job posting, and job description.
 
 ```
 
@@ -64,6 +70,8 @@ abe_comp = competencies[competencies['Major']=='Engineering'].drop(['Option(s)',
 * Clear identification of data inputs
 
 * Clear identification of analysis methods, including a well documented workflow figure.  
+
+## Discussion
 
 Additionally, I would like to see a written discussion of the following:
 
@@ -86,6 +94,10 @@ Other things I will look for:
 * Inclusion of statistical tools
 
 * Publication of workflow in a version controlled manner (your code should be on github)
+
+## Conclusions and Final Thoughts
+
+The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey
 
 ### Jekyll Themes
 
