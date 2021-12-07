@@ -24,7 +24,7 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![Jupyter Notebook](https://github.com/kjar0/516X-Final/blob/229f8b3c1e824566012866598d0a73502316967e/ABE_comp_job.ipynb). A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![Jupyter Notebook](https://github.com/kjar0/516X-Final/blob/d1781e27e4dd0ea36f73f3d0bbae37be51eed352/ABE_comp_job.ipynb). A project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 #### Collect Information
 
