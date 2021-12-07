@@ -68,7 +68,7 @@ csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
 
 Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
 
-![Work](project workflow kaj.pdf)
+![Project Workflow](project workflow kaj.pdf)
 
 ## Discussion
 
@@ -125,7 +125,7 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 
 2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-![Notebook](ABE_comp_job.ipynb)
+![Python Notebook](ABE_comp_job.ipynb)
 
 ## Conclusions and Final Thoughts
 
