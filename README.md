@@ -24,9 +24,7 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-[notebook](url)
-
-This section will provide a general outline of the approach taken to perform data analysis. The full code utilized for this project is located in this ![notebook](https://github.com/kjar0/516X-Final/blob/e5aec0364f245ceb34a1eeb5155ff147e9de5cb9/ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of course competencies to the keywords of job postings?
+This section will provide a general outline of the approach taken to perform data analysis. The full code utilized for this project is located in this [notebook](https://github.com/kjar0/516X-Final/blob/main/ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of course competencies to the keywords of job postings?
 
 ![Project Workflow](/images/wflow.png)
 
@@ -407,4 +405,4 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 
 - Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-![Link to Task Notebook](https://github.com/kjar0/516X-Final/blob/e5aec0364f245ceb34a1eeb5155ff147e9de5cb9/task.ipynb)
+[Link to Task Notebook](https://github.com/kjar0/516X-Final/blob/e5aec0364f245ceb34a1eeb5155ff147e9de5cb9/task.ipynb)
