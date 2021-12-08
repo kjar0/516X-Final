@@ -121,6 +121,7 @@ These 7 job titles are good search terms to utilize because they represent all a
 For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
 
 **indeed_posts deep dive**
+
 First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
 ```
 def indeed_posts(search_term):
@@ -134,7 +135,7 @@ def indeed_posts(search_term):
     df2 = pd.DataFrame(columns = ["Company"])
     df3 = pd.DataFrame(columns = ["URL"])
 ```
-Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with the headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. 
+Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
 ```
     sind = f'https://www.indeed.com/jobs?as_and='
     kword = '&as_phr&as_any=biological%2C%20agriculture%2C%20food%2C%20environment%2C%20biofuel%2C%20fermentation%2C%20water%2C%20machinery%2C%20animal'
@@ -181,16 +182,59 @@ Next, I set up components of the search string (key phrases to the major like ag
         ## *************************** end of code edited from Ryan Jeon's amazing work! :)
 ```
 This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
-
-
-
-I ultimately modified the source code into a function that would take a job title as the input and return a DataFrame containing job title, company, and URL for job posting. Then, for each saved URL from the first search, you navigate to that page and grab the job description text. This is added as another column on the DataFrame that is returned to the user. 
-
-Even with a base code, accomplishing the text scraping from indeed was difficult due to the sheer volume. Once I started incorporating more jobs and search terms, I would get flagged as a bot. The links put together would require a CAPTCHA solve before going to the content. To address this, I utilized a number of User Agents where one was randomly selected for use with each query. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
+```
+ jdesc =  pd.DataFrame(columns = ["Job Description"])
+    for post in df3['URL']:
+        user_agent = random.choice(user_agents)
+        headers = {
+                'dnt': '1',
+                'upgrade-insecure-requests': '1',
+                'User-Agent': user_agent,
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'sec-fetch-site': 'none',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-user': '?1',
+                'sec-fetch-dest': 'document',
+                'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                }
+        r = requests.get(post.format(0), headers = headers)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        time.sleep(5*random.random())
+        job_description = soup.find('div',{'id':'jobDescriptionText'})
+        jd = job_description.get_text(separator=" ") if job_description else "N/A"
+        jdesc.loc[len(jdesc.index)] = [jd.strip()]   
+    indeed = pd.concat([df, df2, df3, jdesc], axis=1, join='inner')
+    print("Done scraping for ", search_term)
+    return indeed
+```
+The information returned from this function is a combined dataframe of job title, company, job posting URL, and full job description.
 
 #### Pre-process data
 
-Once I gathered the data, I needed to take the raw information and format it in a way that would be functional. The only changes I have made at this point are remove the \n (newline) characters from the job description text. I wrote a function that would take a string input and remove capitalization, punctuation, and common words that add little content value (the, a, if). After running the code a few times, I also created an addendum to the english common words that are removed from analysis. When running the analysis, the function will select key words that do appear frequently in the job postings, but don't provide a lot of context about job skills. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
+At this point, we have a very large volume of text data. I was interested to see what words were the most frequent in the job description data
+```
+Counter(" ".join(y['Job Description']).split()).most_common(5)
+[('and', 3021), ('to', 1648), ('the', 1437), ('of', 1301), ('in', 894)]
+```
+Most of the words in the descriptions are common words that add little meaning and value to our analysis. Let's clean this up! This function takes a string input and utilizes stereotypical English stopwords/punctuation as well as other identified stopwords. After running the code a few times, I created this addendum to the english common words that are removed from analysis. When running the analysis, the function will select key words that do appear frequently in the job postings, but don't provide a lot of context about job skills. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
+```
+# function to clean up text (remove common value-minimal words, punctuation, capitalization)
+def clean_post(text):
+    from nltk.corpus import stopwords
+    stopwords = stopwords.words('english')
+    engr_stopwords = ['work', 'experience', 'job', 'ability', 'insurance', 'pay', 'location', 'requirements',
+                 'required', 'skill', 'skills', 'years', 'release', 'engineer', 'preferred', 'new', 'may', 'us', 'office',
+                 '3m', 'status', 'must', 'cemex', 'rfa', 'ula', 'position', 'benefits', 'including', 'gdcc', 'lockheed',
+                 'martin', 'andor', 'apple', 'company', 'target', 'federal', 'western', 'education', 'effectively',
+                 'appropriate', 'meet', 'acquire', 'first', 'needs', 'needed', 'mode', 'rf', 'nand', 'related',
+                 'cae', 'amazon', 'general', 'baker', 'zero', 'nos', 'employees', 'make']
+    stopwords.extend(engr_stopwords)
+    text = ''.join([word for word in text if word not in string.punctuation])
+    text = text.lower()
+    text = ' '.join([word for word in text.split() if word not in stopwords])
+    return text
+```
+This function returns a string stripped of punctuation and words identified as low-value for this analysis. 
 
 #### Data Manipulation & Analysis
 
