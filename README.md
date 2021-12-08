@@ -28,7 +28,7 @@ This section will provide a general outline of the approach taken to perform dat
 
 #### Collect Information
 
-To answer this research question, I received ABE competencies (shown in Research Background) as well as graduating student survey answers from 2016-2021 for the department. The first thing I did with the data was identify any missing values. I was shocked to see how many fields were left blank on the survey, over 50% for Job Title and even more for Organization name and City. 
+To answer this research question, I loaded ABE competencies (shown in Research Background) as well as graduating student survey answers from 2016-2021 from an excel file to a DataFrame. The first thing I did with the data was identify any missing values. I was shocked to see how many fields were left blank on the survey, over 50% for Job Title and even more for Organization name and City. 
 ```
 abe_survey = pd.read_excel('ABE Career Outcomes Data 2016-2021.xlsx')
 print(abe_survey.isna().sum())
@@ -45,8 +45,7 @@ blank = abe_survey.isna().sum()
 print(blank['Job Title']/len(abe_survey))
 0.5026455026455027
 ```
-From the survey answers available, I retrieved the common job titles that ABE students have as well as the most popular employers. 
-
+From the survey answers available, I retrieved the most popular employers as well as common job titles that ABE students have upon graduation. 
 ```
 bse = abe_survey[abe_survey['Major 1 at Graduation'] == 'Biological Systems Engineering']
 ag = abe_survey[abe_survey['Major 1 at Graduation'] == 'Agricultural Engineering']
@@ -80,20 +79,112 @@ Sage Ag LLC                                     3
 CNH Industrial                                  3
 USDA Natural Resources Conservation Service     3
 Name: Organization Name, dtype: int64
+
+bse_job = bse['Job Title'].value_counts().nlargest(5)
+ag_job = ag['Job Title'].value_counts().nlargest(5)
+print("Most popular BSE jobs:\n", bse_job)
+print("Most popular AG ENGR jobs:\n", ag_job)
+Most popular BSE jobs:
+Design Engineer                      3
+Production Engineer                  3
+Production Management Engineer       2
+Management Associate                 2
+Supply chain management associate    1
+Name: Job Title, dtype: int64
+Most popular AG ENGR jobs:
+Design Engineer           25
+Project Engineer           9
+Manufacturing Engineer     7
+Agricultural Engineer      4
+Test Engineer              3
 ```
+I thought it was interesting that the most popular job title for both majors is Design Engineer. I decided to utilize the top 4 job titles for each major for equal representation in the job description search. With the top 4 jobs, I ensured that the job title selected was something that at least 2 ABE graduates have been employed as.
+```
+bse_job = bse['Job Title'].value_counts().nlargest(4).to_frame()
+ag_job = ag['Job Title'].value_counts().nlargest(4).to_frame()
+bse_joblist = bse_job.index.tolist()
+ag_joblist = ag_job.index.tolist()
+abe_joblist = bse_joblist + ag_joblist
+# set() removes any duplicates from the list!
+abe_joblist = list(set(abe_joblist))
+abe_joblist
+['Production Management Engineer',
+ 'Manufacturing Engineer',
+ 'Agricultural Engineer',
+ 'Management Associate',
+ 'Project Engineer',
+ 'Production Engineer',
+ 'Design Engineer']
+```
+These 7 job titles are good search terms to utilize because they represent all aspects of the ABE curriculum -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to Indeed.com's advanced search. 
 
-The top 5 job titles upon graduation that at least 3 people reported were:
+For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
 
-> - Design Engineer
-> - Project Engineer
-> - Production Engineer
-> - Agricultural Engineer
-> - Manufacturing Engineer
+**indeed_posts deep dive**
+First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
+```
+def indeed_posts(search_term):
+    kw = search_term.split(" ")
+## *** a huge thank you to Ryan Jeon for developing the base of this indeed text scraping code, it has been modified for this application
+    from bs4 import BeautifulSoup
+    import requests
+    import time
+    import random
+    df = pd.DataFrame(columns = ["Job_Titles"])
+    df2 = pd.DataFrame(columns = ["Company"])
+    df3 = pd.DataFrame(columns = ["URL"])
+```
+Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with the headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. 
+```
+    sind = f'https://www.indeed.com/jobs?as_and='
+    kword = '&as_phr&as_any=biological%2C%20agriculture%2C%20food%2C%20environment%2C%20biofuel%2C%20fermentation%2C%20water%2C%20machinery%2C%20animal'
+    end = '&as_not&as_ttl&as_cmp&jt=all&st&salary&radius=25&l&fromage=any&limit=10&sort=date&psf=advsrch&from=advancedsearch'
+    user_agents = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36 Edg/96.0.1054.43',
+              'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
+              'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0']
+    for pagenum in range(0,30,10):
+        for word in range(0,len(kw)-1):
+            search_url = sind + kw[word] + '%20'
+        search_url = search_url + kw[len(kw)-1] + kword + end+'%20&start=' + str(pagenum)
+        user_agent = random.choice(user_agents)
+        headers = {
+                'dnt': '1',
+                'upgrade-insecure-requests': '1',
+                'User-Agent': user_agent,
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'sec-fetch-site': 'none',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-user': '?1',
+                'sec-fetch-dest': 'document',
+                'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                }              
+        r = requests.get(search_url, headers = headers)
+        time.sleep(10*random.random())
+        soup = BeautifulSoup(r.text, 'html.parser')
+        titles = soup.select("h2 span") 
+        # select all span tags under the umbrella of h2 tags 
+        companies = soup.find_all(class_ = "companyName")
+        URLs = soup.find_all('a', attrs = {'class' : 'tapItem'})
+        for title in titles:
+            titles_list = title.text
+            df.loc[len(df.index)] = [titles_list]
+            df = df[df.Job_Titles != "new"]
+        for company in companies:
+            company_list = company.text
+            df2.loc[len(df2.index)] = [company_list]
+        for URL in URLs:
+            base = 'http://www.indeed.com'
+            link = URL.attrs['href']
+            new_URL = base + link
+            df3.loc[len(df3.index)] = [new_URL]    
+        ## *************************** end of code edited from Ryan Jeon's amazing work! :)
+```
+This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
 
 
-These 5 job titles are good search terms to utilize because they represent all majors -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to indeed.com. 
 
-For Indeed text scraping, I used a great code developed by Ryan Jeon as a starting point (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I needed to go to the job posting for each job listed and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb. I ultimately modified the source code into a function that would take a job title as the input and return a DataFrame containing job title, company, and URL for job posting. Then, for each saved URL from the first search, you navigate to that page and grab the job description text. This is added as another column on the DataFrame that is returned to the user. 
+I ultimately modified the source code into a function that would take a job title as the input and return a DataFrame containing job title, company, and URL for job posting. Then, for each saved URL from the first search, you navigate to that page and grab the job description text. This is added as another column on the DataFrame that is returned to the user. 
 
 Even with a base code, accomplishing the text scraping from indeed was difficult due to the sheer volume. Once I started incorporating more jobs and search terms, I would get flagged as a bot. The links put together would require a CAPTCHA solve before going to the content. To address this, I utilized a number of User Agents where one was randomly selected for use with each query. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
 
