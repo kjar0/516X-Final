@@ -24,13 +24,13 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The full code utilized for this project is located in this ![notebook](ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The full code utilized for this project is located in this ![notebook](https://github.com/kjar0/516X-Final/blob/e5aec0364f245ceb34a1eeb5155ff147e9de5cb9/ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of course competencies to the keywords of job postings?
 
 ![Project Workflow](/images/wflow.png)
 
 #### Collect Information
 
-To answer this research question, I loaded ABE competencies (shown in Research Background) as well as graduating student survey answers from 2016-2021 from an excel file to a DataFrame. The first thing I did with the data was identify any missing values. I was shocked to see how many fields were left blank on the survey, over 50% for Job Title and even more for Organization name and City. 
+To answer this research question, I loaded ABE competencies (shown in Research Background) as well as graduating student survey answers dated 2016-2021 from an excel file to a DataFrame. The first thing I did with the data was identify any missing values. I was shocked to see how many fields were left blank on the survey, over 50% for Job Title and even more for the Organization name and City. 
 ```
 abe_survey = pd.read_excel('ABE Career Outcomes Data 2016-2021.xlsx')
 print(abe_survey.isna().sum())
@@ -100,7 +100,7 @@ Manufacturing Engineer     7
 Agricultural Engineer      4
 Test Engineer              3
 ```
-I thought it was interesting that the most popular job title for both majors is Design Engineer. I decided to utilize the top 4 job titles for each major for equal representation in the job description search. With the top 4 jobs, I ensured that the job title selected was something that at least 2 ABE graduates have been employed as.
+I thought it was interesting that the most popular job title for both Ag and Biosystems majors is Design Engineer. I decided to utilize the top 4 job titles for each major to attempt an equal representation in the job description search. With the top 4 jobs, I ensured that the job title selected was something that at least 2 ABE graduates have been employed as.
 ```
 bse_job = bse['Job Title'].value_counts().nlargest(4).to_frame()
 ag_job = ag['Job Title'].value_counts().nlargest(4).to_frame()
@@ -118,9 +118,9 @@ abe_joblist
  'Production Engineer',
  'Design Engineer']
 ```
-These 7 job titles are good search terms to utilize because they represent all aspects of the ABE curriculum -- each option could work under 2+ of these titles. I used the common job titles as the search terms that would be input to Indeed.com's advanced search. 
+These 7 job titles are good search terms to utilize because they represent all aspects of the ABE curriculum -- each option could work under 2+ of these titles. The identified common job titles are used as the search terms with Indeed.com's advanced search. 
 
-For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
+For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for an agricultural engineer position that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
 
 - First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
 
@@ -136,7 +136,7 @@ def indeed_posts(search_term):
     df2 = pd.DataFrame(columns = ["Company"])
     df3 = pd.DataFrame(columns = ["URL"])
 ```
-- Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
+- Next, I set up components of the search string (including key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page currently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly, again to avoid being identified as a bot.  
 
 ```
     sind = f'https://www.indeed.com/jobs?as_and='
@@ -183,7 +183,7 @@ def indeed_posts(search_term):
             df3.loc[len(df3.index)] = [new_URL]    
         ## *************************** end of code edited from Ryan Jeon's amazing work! :)
 ```
-- This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
+- This section of the code navigates to the URL stored for each job posting and extracts the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. However, this takes a really long time. 
 
 ```
  jdesc =  pd.DataFrame(columns = ["Job Description"])
@@ -210,7 +210,7 @@ def indeed_posts(search_term):
     print("Done scraping for ", search_term)
     return indeed
 ```
-    The information returned from this function is a combined dataframe of job title, company, job posting URL, and full job description.
+The information returned from this function is a combined DataFrame of job title, company, job posting URL, and full job description.
 
 #### Pre-process data
 
@@ -219,7 +219,7 @@ At this point, we have a very large volume of text data. I was interested to see
 Counter(" ".join(y['Job Description']).split()).most_common(5)
 [('and', 3021), ('to', 1648), ('the', 1437), ('of', 1301), ('in', 894)]
 ```
-Most of the words in the descriptions are common words that add little meaning and value to our analysis. Let's clean this up! This function takes a string input and utilizes stereotypical English stopwords/punctuation as well as other identified stopwords. After running the code a few times, I created this addendum to the english common words that are removed from analysis. When running the analysis, the function will select key words that do appear frequently in the job postings, but don't provide a lot of context about job skills. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
+Most of the words in the descriptions are common words that add little meaning and value to our analysis. Let's clean this up! This function takes a string input and utilizes stereotypical English stopwords/punctuation as well as other identified stopwords. After running the code a few times, I created this addendum to the english common words that are removed from analysis. These words appeared frequently in the job postings, but don't provide a lot of context about job skills and requirements. Most of these job posting words I filtered out are related to logistic details about the job, for example insurance, pay, location, etc.
 ```
 # function to clean up text (remove common value-minimal words, punctuation, capitalization)
 def clean_post(text):
@@ -241,9 +241,10 @@ This function returns a string stripped of punctuation and words identified as l
 
 #### Data Manipulation & Analysis
 
+Once I established the text scraping and formatting functions independently, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. 
+
 ![mfunc](/images/major_comp.png)
 
-Once I established the text scraping and formatting functions independently, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. 
 ```
 def major_comp(joblist):
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -285,7 +286,7 @@ def major_comp(joblist):
         skills4vec.append(b)    
     return skillsdf, skills4vec
 ```
-This function retrieves job posting information for each job in list, cleans the posts, and finds the 10 keywords for the job title using TF-IDF. Once this is complete for each job in the list, it combines the 10 keywords from each job into a list of strings!
+This function takes a list of jobs and retrieves information from Indeed.com, cleans the posts, and finds the top 10 keywords for the job title using TF-IDF. Once this is complete for each job in the list, it combines the 10 keywords from each job into a list of strings for further analysis!
 
 
 >> **What is TF-IDF?**
@@ -293,7 +294,7 @@ This function retrieves job posting information for each job in list, cleans the
 >> The TF-IDF Vectorizer takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relevant it is and how rare a word is in the entire document set. 
 
 
-Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. This way, the TF-IDF scores represent how each document performs compared against the standard of job postings. In this analysis, we are most interesting in seeing how the course competencies perform. 
+Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. This way, the TF-IDF scores represent how each document performs compared against the standard of job postings. In this analysis, we are most interested in seeing how the course competencies perform. 
 ```
 # initialize vector and find TF-IDF matrix for each document
 tfidf_v = TfidfVectorizer()
@@ -302,7 +303,7 @@ jfit = tfidf_v.fit(job_skill_4vec)
 # transform job posting + competency key skills to TF-IDF matrix
 tf_matrix = tfidf_v.transform(jobncomp_4vec)
 ```
-I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This gives the measure of the similarity between two non-zero vectors in space.
+I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This gives a measure of the similarity between two non-zero vectors in space.
 ```
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
@@ -353,11 +354,11 @@ Counter(kwlist).most_common(10)
 
 The ABE career outcomes data set was pretty incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
 
-Surprisingly, even when using the advanced search tool on Indeed it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between the job posting text and competencies. More work could be done to fine tune this search query. Further, the job postings contain a decent amount of information relating to the company and various disclaimer statements about the job. Another area of improvement would be to have an even more exhaustive text preprocessing to remove that sort of information. Also, it would be helpful to utilize a method that identifies similar words (plurals, synonyms) while maintaining nuance. There are truly so many specialized options out there that could be utilized effectively. 
+Surprisingly, even when using the advanced search tool on Indeed it was difficult to find agricultural/biological systems focused jobs. This could be a positive because not every graduate will stay in an industry directly related to ABE, but this could account for some of the discrepancy between the job posting text and competencies. More work could be done to fine tune this search query. Further, the job postings contain a decent amount of information relating to the company and various disclaimer statements about the job. Another area of improvement would be to have an even more exhaustive text preprocessing to remove that sort of information. Also, it would be helpful to utilize a method that identifies similar words (plurals, synonyms) while maintaining nuance. There are truly so many specialized options out there that could be utilized effectively. 
 
 #### Drawing Conclusions
 
-A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for a management associate role. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to management associateg is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. I would be interest to investigate the cause of this with further analysis. I assume it is because the TF-IDF Vectorization does not account for the similarity of words (team and teamwork, system and systems, etc.). It would also be interesting to see how the text cleaning could be improved by just extracting the job skills rather than the entire post with company information. 
+A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for a management associate role. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to management associateg is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. I would be interest to investigate the cause of this with further analysis. I assume it is because the TF-IDF Vectorization does not account for the similarity of words (team and teamwork, system and systems, etc.).
 
 Because of the low values, I'll be drawing conclusions mostly from the keywords. The three keywords that the course competencies fit match very highly with the job descriptions. Based on my work, I have concluded that curriculum outcomes are not the best source data to represent what students learn in the ABE department. These are written very broadly and make generalizations that can relate to various work areas. Job description verbiage tends to be more specific and action oriented rather than analysis based. In future iterations of this work, additional information that is more specific to each focus area could be added or even individual course descriptions. This would give the ABE outcomes a broader text base to work with.Just by looking at the top keywords for each job, it is my opinion that the ABE curriculum adequately prepares students with those skills. Although the verbiage isn't directly included in the competencies, through experience I know that many courses cover these topics. 
 
@@ -404,4 +405,4 @@ Note: for full functionality in the context of this analysis, the major_comp fun
 
 - Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-![Link to Task Notebook](task.ipynb)
+![Link to Task Notebook](https://github.com/kjar0/516X-Final/blob/e5aec0364f245ceb34a1eeb5155ff147e9de5cb9/task.ipynb)
