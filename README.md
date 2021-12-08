@@ -120,93 +120,94 @@ These 7 job titles are good search terms to utilize because they represent all a
 
 For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
 
-**indeed_posts deep dive**
-
 1. First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
-    ```
-    def indeed_posts(search_term):
-        kw = search_term.split(" ")
-    ## *** a huge thank you to Ryan Jeon for developing the base of this indeed text scraping code, it has been modified for this application
-        from bs4 import BeautifulSoup
-        import requests
-        import time
-        import random
-        df = pd.DataFrame(columns = ["Job_Titles"])
-        df2 = pd.DataFrame(columns = ["Company"])
-        df3 = pd.DataFrame(columns = ["URL"])
-    ```
+
+```
+def indeed_posts(search_term):
+    kw = search_term.split(" ")
+## *** a huge thank you to Ryan Jeon for developing the base of this indeed text scraping code, it has been modified for this application
+    from bs4 import BeautifulSoup
+    import requests
+    import time
+    import random
+    df = pd.DataFrame(columns = ["Job_Titles"])
+    df2 = pd.DataFrame(columns = ["Company"])
+    df3 = pd.DataFrame(columns = ["URL"])
+```
 2. Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
-    ```
-        sind = f'https://www.indeed.com/jobs?as_and='
-        kword = '&as_phr&as_any=biological%2C%20agriculture%2C%20food%2C%20environment%2C%20biofuel%2C%20fermentation%2C%20water%2C%20machinery%2C%20animal'
-        end = '&as_not&as_ttl&as_cmp&jt=all&st&salary&radius=25&l&fromage=any&limit=10&sort=date&psf=advsrch&from=advancedsearch'
-        user_agents = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36 Edg/96.0.1054.43',
-                  'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
-                  'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
-                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0']
-        for pagenum in range(0,30,10):
-            for word in range(0,len(kw)-1):
-                search_url = sind + kw[word] + '%20'
-            search_url = search_url + kw[len(kw)-1] + kword + end+'%20&start=' + str(pagenum)
-            user_agent = random.choice(user_agents)
-            headers = {
-                    'dnt': '1',
-                    'upgrade-insecure-requests': '1',
-                    'User-Agent': user_agent,
-                    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                    'sec-fetch-site': 'none',
-                    'sec-fetch-mode': 'navigate',
-                    'sec-fetch-user': '?1',
-                    'sec-fetch-dest': 'document',
-                    'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-                    }              
-            r = requests.get(search_url, headers = headers)
-            time.sleep(10*random.random())
-            soup = BeautifulSoup(r.text, 'html.parser')
-            titles = soup.select("h2 span") 
-            # select all span tags under the umbrella of h2 tags 
-            companies = soup.find_all(class_ = "companyName")
-            URLs = soup.find_all('a', attrs = {'class' : 'tapItem'})
-            for title in titles:
-                titles_list = title.text
-                df.loc[len(df.index)] = [titles_list]
-                df = df[df.Job_Titles != "new"]
-            for company in companies:
-                company_list = company.text
-                df2.loc[len(df2.index)] = [company_list]
-            for URL in URLs:
-                base = 'http://www.indeed.com'
-                link = URL.attrs['href']
-                new_URL = base + link
-                df3.loc[len(df3.index)] = [new_URL]    
-            ## *************************** end of code edited from Ryan Jeon's amazing work! :)
-    ```
+
+```
+    sind = f'https://www.indeed.com/jobs?as_and='
+    kword = '&as_phr&as_any=biological%2C%20agriculture%2C%20food%2C%20environment%2C%20biofuel%2C%20fermentation%2C%20water%2C%20machinery%2C%20animal'
+    end = '&as_not&as_ttl&as_cmp&jt=all&st&salary&radius=25&l&fromage=any&limit=10&sort=date&psf=advsrch&from=advancedsearch'
+    user_agents = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36 Edg/96.0.1054.43',
+              'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
+              'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0']
+    for pagenum in range(0,30,10):
+        for word in range(0,len(kw)-1):
+            search_url = sind + kw[word] + '%20'
+        search_url = search_url + kw[len(kw)-1] + kword + end+'%20&start=' + str(pagenum)
+        user_agent = random.choice(user_agents)
+        headers = {
+                'dnt': '1',
+                'upgrade-insecure-requests': '1',
+                'User-Agent': user_agent,
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'sec-fetch-site': 'none',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-user': '?1',
+                'sec-fetch-dest': 'document',
+                'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                }              
+        r = requests.get(search_url, headers = headers)
+        time.sleep(10*random.random())
+        soup = BeautifulSoup(r.text, 'html.parser')
+        titles = soup.select("h2 span") 
+        # select all span tags under the umbrella of h2 tags 
+        companies = soup.find_all(class_ = "companyName")
+        URLs = soup.find_all('a', attrs = {'class' : 'tapItem'})
+        for title in titles:
+            titles_list = title.text
+            df.loc[len(df.index)] = [titles_list]
+            df = df[df.Job_Titles != "new"]
+        for company in companies:
+            company_list = company.text
+            df2.loc[len(df2.index)] = [company_list]
+        for URL in URLs:
+            base = 'http://www.indeed.com'
+            link = URL.attrs['href']
+            new_URL = base + link
+            df3.loc[len(df3.index)] = [new_URL]    
+        ## *************************** end of code edited from Ryan Jeon's amazing work! :)
+```
 3. This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
-    ```
-     jdesc =  pd.DataFrame(columns = ["Job Description"])
-        for post in df3['URL']:
-            user_agent = random.choice(user_agents)
-            headers = {
-                    'dnt': '1',
-                    'upgrade-insecure-requests': '1',
-                    'User-Agent': user_agent,
-                    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                    'sec-fetch-site': 'none',
-                    'sec-fetch-mode': 'navigate',
-                    'sec-fetch-user': '?1',
-                    'sec-fetch-dest': 'document',
-                    'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-                    }
-            r = requests.get(post.format(0), headers = headers)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            time.sleep(5*random.random())
-            job_description = soup.find('div',{'id':'jobDescriptionText'})
-            jd = job_description.get_text(separator=" ") if job_description else "N/A"
-            jdesc.loc[len(jdesc.index)] = [jd.strip()]   
-        indeed = pd.concat([df, df2, df3, jdesc], axis=1, join='inner')
-        print("Done scraping for ", search_term)
-        return indeed
-    ```
+
+```
+ jdesc =  pd.DataFrame(columns = ["Job Description"])
+    for post in df3['URL']:
+        user_agent = random.choice(user_agents)
+        headers = {
+                'dnt': '1',
+                'upgrade-insecure-requests': '1',
+                'User-Agent': user_agent,
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'sec-fetch-site': 'none',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-user': '?1',
+                'sec-fetch-dest': 'document',
+                'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                }
+        r = requests.get(post.format(0), headers = headers)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        time.sleep(5*random.random())
+        job_description = soup.find('div',{'id':'jobDescriptionText'})
+        jd = job_description.get_text(separator=" ") if job_description else "N/A"
+        jdesc.loc[len(jdesc.index)] = [jd.strip()]   
+    indeed = pd.concat([df, df2, df3, jdesc], axis=1, join='inner')
+    print("Done scraping for ", search_term)
+    return indeed
+```
     The information returned from this function is a combined dataframe of job title, company, job posting URL, and full job description.
 
 #### Pre-process data
@@ -238,7 +239,11 @@ This function returns a string stripped of punctuation and words identified as l
 
 #### Data Manipulation & Analysis
 
-Once I established the text scraping and formatting functions, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from `major_comp` was a list of the keywords so they could be used for further analysis. 
+Once I established the text scraping and formatting functions independently, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. 
+
+![mfunc](/images/major_comp.png)
+
+To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from `major_comp` was a list of the keywords so they could be used for further analysis. 
 
 Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. 
 ```
