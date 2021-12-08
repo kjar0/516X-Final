@@ -289,7 +289,8 @@ This function retrieves job posting information for each job in list, cleans the
 
 
 >> **What is TF-IDF?**
->> The TF-IDF Vectorizer takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. 
+>>
+>> The TF-IDF Vectorizer takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relevant it is and how rare a word is in the entire document set. 
 
 
 Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. This way, the TF-IDF scores represent how each document performs compared against the standard of job postings. In this analysis, we are most interesting in seeing how the course competencies perform. 
@@ -301,7 +302,7 @@ jfit = tfidf_v.fit(job_skill_4vec)
 # transform job posting + competency key skills to TF-IDF matrix
 tf_matrix = tfidf_v.transform(jobncomp_4vec)
 ```
-I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This is the measure of the similarity between two non-zero vectors in space.
+I used the cosine_similarity function to compute the dot product of the job posting TF-IDF values and competency TF-IDF values. This gives the measure of the similarity between two non-zero vectors in space.
 ```
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
@@ -310,11 +311,36 @@ sns.heatmap(csim)
 array([[1.        , 0.23902804, 0.24906492, 0.30278205, 0.02753456,
         0.28130334, 0.23832191, 0.39331685]])
 ```
-![Heat Map](/images/f_csim_heat.png)
+![Heat Map](/images/fhmap.png)
 
-Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison.
-
+I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison.
+```
+df = pd.DataFrame(tf_matrix.T.toarray(), index=fname)
+df = df.sort_values(by=0, ascending=False)
+df.index.name = 'Outcome'
+df.reset_index(inplace=True)
+job_skill_df['Outcome'] = pd.DataFrame(df['Outcome'][:10])
+job_skill_df
+```
 ![Skill](/images/ftop_skills.jpg)
+
+I also wanted to look at what skills were the most frequent in this dataframe.
+```
+# dataframe --> single array of all terms
+kwlist = job_skill_df.to_numpy().flatten()
+# count frequency
+Counter(kwlist).most_common(10)
+[('engineering', 7),
+ ('team', 7),
+ ('project', 5),
+ ('design', 5),
+ ('equipment', 5),
+ ('quality', 4),
+ ('management', 4),
+ ('technical', 4),
+ ('production', 4),
+ ('manufacturing', 3)]
+```
 
 ![mfunc](/images/major_comp.png)
 
