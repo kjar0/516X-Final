@@ -24,7 +24,7 @@ ABE student outcomes and required skills from job descriptions both characterize
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebook](https://github.com/kjar0/516X-Final/blob/7118e9ef78183f967e09b61e2a1cdbfb9f90c43a/ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The full code utilized for this project is located in this ![notebook](ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
 
 ![Project Workflow](/images/wflow.png)
 
@@ -122,7 +122,7 @@ These 7 job titles are good search terms to utilize because they represent all a
 
 For Indeed text scraping, I started with a great code developed by Ryan Jeon (thank you so much!). The base code performed text scraping of an indeed search for agriculture engineer that stored the job title, company, quick blurb posted on the home page, and url of the job posting. I needed to modify this code for the use I had in mind. I'll be going through the function in sections below, so even though the code will be broken up, it's all a part of the same indeed_posts function. 
 
-1. First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
+- First I split the string passed to the function into it's separate words, then imported packages for html/timing/random number generation. DataFrames are initialized to hold the information gathered from each job posting: job title, company name, and URL of the full posting. 
 
 ```
 def indeed_posts(search_term):
@@ -136,7 +136,7 @@ def indeed_posts(search_term):
     df2 = pd.DataFrame(columns = ["Company"])
     df3 = pd.DataFrame(columns = ["URL"])
 ```
-2. Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
+- Next, I set up components of the search string (key phrases to the major like agriculture, environment, water, etc.) and list of user agents outside of the loop. Then, the following code executes over the first 3 results pages of the Indeed advanced search. The search string is formed from the job title passed into the function and the page curreently being searched. A user agent is randomly selected and passed in with addional headers arguments when requesting the url. This helps avoid being recognized as a bot because the series of requests isn't coming from the same browser. Next the code combs through the BeautifulSoup html to find and save identified information. Also, there is a set wait time so the code doesn't execute extremely quickly. I also added time delays to reduce the frequency of clicks/actions on the page as the code execution would be much faster than standard human use of Indeed.com. 
 
 ```
     sind = f'https://www.indeed.com/jobs?as_and='
@@ -183,7 +183,7 @@ def indeed_posts(search_term):
             df3.loc[len(df3.index)] = [new_URL]    
         ## *************************** end of code edited from Ryan Jeon's amazing work! :)
 ```
-3. This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
+- This section of the code to navigate to the URL stored for each job posting and extract the text of the entire job description. This is because a full list of the skills employers are looking for isn't typically shown in the blurb and I wanted to evaluate all of the information. 
 
 ```
  jdesc =  pd.DataFrame(columns = ["Job Description"])
@@ -313,44 +313,53 @@ array([[1.        , 0.23902804, 0.24906492, 0.30278205, 0.02753456,
 ```
 ![Heat Map](/images/fhmap.png)
 
-I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison.
+I added the top keywords for the common jobs and course outcomes to a DataFrame for easy comparison. Notice that only 4 keywords for the course outcomes were added. That is because the outcomes only contained 4 of the 29 keywords identified from the job postings.
 ```
 df = pd.DataFrame(tf_matrix.T.toarray(), index=fname)
 df = df.sort_values(by=0, ascending=False)
+display(df)
 df.index.name = 'Outcome'
 df.reset_index(inplace=True)
-job_skill_df['Outcome'] = pd.DataFrame(df['Outcome'][:10])
+job_skill_df['Outcome'] = pd.DataFrame(df['Outcome'][:4])
 job_skill_df
 ```
-![Skill](/images/ftop_skills.jpg)
+![Matrix](/images/matrix.jpg)
+![Skill](/images/daskills.jpg)
 
 I also wanted to look at what skills were the most frequent in this dataframe.
 ```
-# dataframe --> single array of all terms
-kwlist = job_skill_df.to_numpy().flatten()
+import numpy as np
+# dataframe --> single array of all job keywords
+x = job_skill_df.drop(['Outcome'], axis=1).to_numpy()
+kwlist =x.flatten()
 # count frequency
 Counter(kwlist).most_common(10)
-[('engineering', 7),
- ('team', 7),
+[('engineering', 6),
+ ('team', 6),
  ('project', 5),
- ('design', 5),
  ('equipment', 5),
  ('quality', 4),
+ ('design', 4),
  ('management', 4),
- ('technical', 4),
- ('production', 4),
- ('manufacturing', 3)]
+ ('manufacturing', 3),
+ ('technical', 3),
+ ('process', 3)]
 ```
-
-![mfunc](/images/major_comp.png)
+3 keywords for curriculum outcomes (engineering, design, team) are also located within the top 6 keywords for all job descriptions! The 4th curriculum outcome keyword, knowledge, did not make the top 10 for job descriptions. 
 
 ## Discussion
 
-A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for manufacturing engineering. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to manufacturing engineering is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. 
+#### Data Challenges
 
-![Skill](/images/top_skills.jpg)
+The ABE career outcomes data set was pretty incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
 
-However, when looking at the top 10 keywords for each job description match very closely to course competencies for the ABE department. Because of this and the plethora of irrelevant information included in the job descriptions, I would conclude that by meeting the student outcomes, ABE graduates are adequately prepared with skills for the workforce.   
+Surprisingly, even when using the advanced search tool on Indeed it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between the job posting text and competencies. More work could be done to fine tune this search query. Further, the job postings contain a decent amount of information relating to the company and various disclaimer statements about the job. Another area of improvement would be to have an even more exhaustive text preprocessing to remove that sort of information. Also, it would be helpful to utilize a method that identifies similar words (plurals, synonyms) while maintaining nuance. There are truly so many specialized options out there that could be utilized effectively. 
+
+#### Drawing Conclusions
+
+A high cosine_similarity result indicates a closer match between two references. Based on this analysis of the 5 most common jobs for ABE graduates, the typical ABE student is most prepared for a design engineer role and least prepared for a management associate role. The cosine_similarity output is shown in the heat map output above. Because the value corresponding to management associateg is the lowest, this indicates that the vectors are the most dissimilar of those analyzed in this dataset. As a whole, the job posting TF-IDF values were not as comparable to the course competencies as I expected. I would be interest to investigate the cause of this with further analysis. I assume it is because the TF-IDF Vectorization does not account for the similarity of words (team and teamwork, system and systems, etc.). It would also be interesting to see how the text cleaning could be improved by just extracting the job skills rather than the entire post with company information. 
+
+Because of the low values, I'll be drawing conclusions mostly from the keywords. The three keywords that the course competencies fit match very highly with the job descriptions. Based on my work, I have concluded that curriculum outcomes are not the best source data to represent what students learn in the ABE department. These are written very broadly and make generalizations that can relate to various work areas. Job description verbiage tends to be more specific and action oriented rather than analysis based. In future iterations of this work, additional information that is more specific to each focus area could be added or even individual course descriptions. This would give the ABE outcomes a broader text base to work with.Just by looking at the top keywords for each job, it is my opinion that the ABE curriculum adequately prepares students with those skills. Although the verbiage isn't directly included in the competencies, through experience I know that many courses cover these topics. 
 
 ### Relevant Class Topics
 
@@ -372,7 +381,7 @@ Interoperable: This code is decently interoperable. I have the key steps broken 
 Reusable: The keywords identified from this analysis could be referenced with course objectives specific to each major's option to determine which specific options need strength. The figures produced from the heat mat aren't necessarily reproducable with the current state of the code because Indeed.com is constantly updating with new jobs. This could be changed with further editing by having a fixed set of job postings utilized. However, choice this keeps the results up to date with the job market. Also, the analysis just requires a list of strings. This section of the code could be used to compare any pieces of text!
 
 ## Task Suggestions
-1. Update the text scraping function `indeed_posts` to take an additional input of keywords to narrow the search. This is currently set as the kword variable within the function, but make the necessary changes to allow the user to decide how to filter the search besides job title. Snippet of function relating to search url building shown below.
+- Update the text scraping function `indeed_posts` to take an additional input of keywords to narrow the search. This is currently set as the kword variable within the function, but make the necessary changes to allow the user to decide how to additionally filter the search besides job title. For example, this could be by keyword but also location and salary. Snippet of function relating to search url building shown below.
 
 ```
 def indeed_posts(search_term):
@@ -393,13 +402,6 @@ def indeed_posts(search_term):
 ```
 Note: for full functionality in the context of this analysis, the major_comp function would need to be updated also. For the purpose of this task, just copy the indeed_posts function independently and get that working!
 
-2. Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
+- Identify another text modeling approach/processing step that can better account for the similarity of the words used in used phrases (ex. project & projects, systems & system, etc!)
 
-![Python Notebook](ABE_comp_job.ipynb)
-# make an assignment notebook here!!
-
-## Conclusions and Final Thoughts
-
-The ABE career outcomes data was very incomplete due to students not adding their employment information (job title, company). Further, not every student is completing the survey. As a student, I understand that at times it can be difficult to keep up with emails and fill out every survey when there's a lot on your plate. One way survey responses could be boosted is if this survey was added as an assignment for a senior-level class like Capstone II. This way, most people would be more motivated to complete the survey and the results would be more representative and therefore more useful.
-
-Surprisingly, even when using the advanced search it was difficult to get agricultural/biological systems focused industry jobs. This could be a positive because not every graduate will stay in industry, but this could account for some of the discrepancy between the job posting text and competencies. Further, the job postings contain a decent amount of information relating to the company and various disclaimer statements about the job. Another area of improvement would be to have an even more exhaustive text preprocessing to remove that sort of information. Also, it would be helpful to utilize a method that identifies similar words (plurals, synonyms) while maintaining nuance. There are truly so many specialized options out there that there is significant room for improvement on this project. 
+![Link to Task Notebook](task.ipynb)
