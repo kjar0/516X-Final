@@ -20,11 +20,13 @@ When reading over this list, the language almost sounds like a job description! 
 > - Compile and furnish necessary information (engineering decisions and reports of pertinent design analyses data) to document the design solution required for building of prototypes and adoption of the design
 > - Provide technical support to marketing, manufacturing, quality and supply management organizations
 
-ABE student outcomes and required skills from job descriptions both characterize how a person is able to think and work. This project serves as an evaluation of these competencies. The main research question is: do ABE course competencies support students to meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department up to date with what employers are looking for.Evaluating the curriculum ensures that students are prepared to be successful and get their money's worth with a degree from ISU!
+ABE student outcomes and required skills from job descriptions both characterize how a person is able to think and work. This project serves as an evaluation of these competencies. The main research question is: do ABE course competencies support students to meet job requirements? Answering this question will help curriculum directors determine what changes or supplementations should be made to the program. This keeps the department up to date with what employers are looking for. Evaluating the curriculum ensures that students are prepared to be successful and get their money's worth with a degree from ISU!
 
 ## Data Analysis
 
-This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebookpath](ABE_comp_job.ipynb) [notebooklink](https://github.com/kjar0/516X-Final/blob/7118e9ef78183f967e09b61e2a1cdbfb9f90c43a/ABE_comp_job.ipynb), please take a look if you're interested! The project workflow is included at the conclusion of this section. The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+This section will provide a general outline of the approach taken to perform data analysis. The exact code utilized is located in this ![notebook](https://github.com/kjar0/516X-Final/blob/7118e9ef78183f967e09b61e2a1cdbfb9f90c43a/ABE_comp_job.ipynb), please take a look if you're interested! The data analysis question is: how similar are the keywords of job postings to the keywords of course competencies?
+
+![Project Workflow](/images/wflow_clear.png)
 
 #### Collect Information
 
@@ -239,13 +241,58 @@ This function returns a string stripped of punctuation and words identified as l
 
 #### Data Manipulation & Analysis
 
-Once I established the text scraping and formatting functions independently, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. 
-
 ![mfunc](/images/major_comp.png)
 
-To evaluate the text from the job posts of each job, I used the TF-IDF Vectorizer. This model takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. From these TF-IDF scores, I found the top 10 keywords for each job. Once I found all of these keywords, I created a dataframe to hold them that I output from the function. The second output from `major_comp` was a list of the keywords so they could be used for further analysis. 
+Once I established the text scraping and formatting functions independently, I leveraged a 3rd function, `major_comp`, that would call the text scraping and formatting functions, then manipulate and analyze the data so the output could be easily visualized. 
+```
+def major_comp(joblist):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    import itertools
+    tfidf_v = TfidfVectorizer()
+    tskill = []
+    dfs = {}
+    for job in joblist:
+        # retrieve job posting text
+        search_results = indeed_posts(job)
+        posts = search_results['Job Description'].tolist()
+        # clean job postings
+        clean_posts = list(map(clean_post, posts))
+        # utilize TF-IDF vectorization and retrieve identified keywords
+        eval_job = tfidf_v.fit_transform(clean_posts)
+        fname = tfidf_v.get_feature_names()
+        
+        # creating dictionary of top skills
+        df = pd.DataFrame(eval_job.T.toarray(), index=fname)
+        job_avg = df.mean(axis=1)
+        job_avg = pd.DataFrame(job_avg.sort_values(ascending=False).nlargest(10))
+        # store name of keyword rather than associated TF-IDF score
+        job_avg.index.name = 'Skill'
+        job_avg.reset_index(inplace=True)
+        dfs[job] = pd.DataFrame(job_avg['Skill'])
 
-Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. 
+    # combine dictionary into dataframe
+    skillsdf = pd.concat(dfs, axis=1)
+    # column names = job title
+    skillsdf = skillsdf.droplevel(1, axis = 1)
+    skills4vec = []
+    # loop through jobs
+    for job in joblist:
+        # convert job key skills to list
+        a = skillsdf[job].tolist()
+        # change from 10 strings to one long string!
+        b = " ".join(a)
+        # add to list of total skills, ready to use in Tfidf Vectorization
+        skills4vec.append(b)    
+    return skillsdf, skills4vec
+```
+This function retrieves job posting information for each job in list, cleans the posts, and finds the 10 keywords for the job title using TF-IDF. Once this is complete for each job in the list, it combines the 10 keywords from each job into a list of strings!
+
+
+>> **What is TF-IDF?**
+>> The TF-IDF Vectorizer takes string inputs and identifies the keywords from the document set based on the term frequency and inverse document frequency. Essentially it gives each keyword a score based on how relavent it is and how rare a word is in the entire document set. 
+
+
+Next, I used the TF-IDF Vectorizer again to assess the course outcomes against job post keywords. I processed the course outcomes using the same formatting function used for the job posts. Then, I trained the model using job keywords and fit the combined job keyword and filtered outcomes. I trained the model using job keywords because I wanted that to be the "vocabulary" or set of terms used to assess the course outcomes. This way, the TF-IDF scores represent how each document performs compared against the standard of job postings. In this analysis, we are most interesting in seeing how the course competencies perform. 
 ```
 # initialize vector and find TF-IDF matrix for each document
 tfidf_v = TfidfVectorizer()
@@ -258,12 +305,18 @@ I used the cosine_similarity function to compute the dot product of the job post
 ```
 # find cosine similarity for competency vs. posting by job type
 csim = cosine_similarity(tf_matrix[0:1], tf_matrix)
+print(csim)
+sns.heatmap(csim)
+array([[1.        , 0.23902804, 0.24906492, 0.30278205, 0.02753456,
+        0.28130334, 0.23832191, 0.39331685]])
 ```
-![Heat Map](/images/csim_heat.jpg)
+![Heat Map](/images/f_csim_heat.png)
 
-Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison. 
+Finally, I added the top keywords for the common jobs and course competencies to a DataFrame for easy comparison.
 
-![Project Workflow](/images/flow.png)
+![Skill](/images/ftop_skills.jpg)
+
+![mfunc](/images/major_comp.png)
 
 ## Discussion
 
